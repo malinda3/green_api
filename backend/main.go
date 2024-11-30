@@ -96,6 +96,8 @@ func main() {
 
 	fmt.Println("API сервер запущен на порту 8881")
 	log.Fatal(http.ListenAndServe(":8881", handler))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8881", handler))
+	
 }
 
 
