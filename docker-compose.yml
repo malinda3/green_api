@@ -7,7 +7,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/app:/usr/share/nginx/html:ro
     networks:
       - main-network
 
