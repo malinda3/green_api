@@ -223,7 +223,7 @@
     function getStateInstance() {
         const idInstance = document.getElementById('idInstance').value;
         const apiTokenInstance = document.getElementById('apiTokenInstance').value;
-        fetch($`{baseUrl}/getStateInstance`, {
+        fetch(`${baseUrl}/getStateInstance`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -250,7 +250,7 @@
         return;
     }
 
-    fetch($`{baseUrl}/send-message`, {
+    fetch(`${baseUrl}/send-message`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -278,7 +278,7 @@ function sendFileByUrl() {
         return;
     }
 
-    fetch($`{baseUrl}/send-file`, {
+    fetch(`${baseUrl}/send-file`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
