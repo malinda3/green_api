@@ -1,4 +1,3 @@
-
 FROM golang:1.23-alpine as builder
 
 WORKDIR /app
@@ -7,6 +6,10 @@ COPY go.mod go.sum ./
 
 RUN go mod tidy
 
-COPY . .
+COPY . .  # Копируем весь код
 
-RUN go run  /app/backend/main.go
+# Собираем приложение
+RUN go build -o /app/main /app/backend/main.go
+
+# Запускаем приложение
+CMD ["/app/main"]
