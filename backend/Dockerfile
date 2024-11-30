@@ -15,5 +15,5 @@ RUN go mod tidy
 
 COPY . .
 
-RUN go run /app/backend/main.go
-
+WORKDIR /app/backend
+RUN go run main.go
