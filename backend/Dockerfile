@@ -9,6 +9,4 @@ RUN go mod tidy
 
 COPY . .
 
-RUN go build -o /app/backend/main .
-
-CMD ["/app/main"]
+RUN go run  /app/backend/main.go
