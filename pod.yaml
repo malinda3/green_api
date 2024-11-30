@@ -16,6 +16,7 @@ spec:
       containers:
       - name: backend
         image: green_api_myapp-backend:latest
+        imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 8881
         env:
@@ -23,6 +24,7 @@ spec:
             value: http://backend:8881 
       - name: frontend
         image: green_api_myapp-frontend:latest
+        imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 80
 ---
