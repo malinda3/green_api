@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . ./
 
-RUN go get github.com/rs/cors
+RUN go install github.com/rs/cors
 
 RUN ls -l /app/backend/greenapi && ls -l frontend/
 
