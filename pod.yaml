@@ -35,10 +35,12 @@ spec:
   selector:
     app: my-app
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-    - protocol: TCP
+    - name: http-backend
+      protocol: TCP
       port: 8881
       targetPort: 8881
+    - name: http-frontend
+      protocol: TCP
+      port: 80
+      targetPort: 80
   type: NodePort  # Открывает порты на узле для внешнего доступа
