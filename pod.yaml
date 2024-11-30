@@ -20,7 +20,7 @@ spec:
           - containerPort: 8881
         env:
           - name: BASE_URL
-            value: http://backend:8881  # Изменил с localhost на имя контейнера
+            value: http://backend:8881 
       - name: frontend
         image: green_api_myapp-frontend:latest
         ports:
@@ -43,4 +43,4 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
-  type: NodePort  # Открывает порты на узле для внешнего доступа
+  type: NodePort 
