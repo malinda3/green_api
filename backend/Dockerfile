@@ -16,6 +16,6 @@ RUN go mod tidy
 COPY . ./
 
 WORKDIR /app/backend
-RUN ls -l
+RUN ls
 
 RUN go run main.go
