@@ -16,6 +16,6 @@ RUN go mod tidy
 COPY . ./
 
 WORKDIR /app/backend
-RUN ls
+RUN ls greenapi/
 
-RUN go run main.go
+RUN go run greenapi/main.go
