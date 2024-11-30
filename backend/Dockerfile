@@ -17,4 +17,4 @@ RUN ls -l /app/backend/greenapi
 
 RUN go get github.com/rs/cors
 
-RUN go run /app/backend/greenapi/backendmain.go
+RUN go run /app/backend/greenapi/backend/main.go
