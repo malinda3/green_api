@@ -8,9 +8,8 @@ COPY backend/greenapi/go.mod ./backend/greenapi/
 
 RUN go mod tidy
 
-RUN mkdir -p /app/backend/greenapi
-
 WORKDIR /app/backend/greenapi
+
 RUN go mod tidy
 
 COPY . ./
