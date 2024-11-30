@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: myapp-backend:latest
+        image: green_api_myapp-backend:latest
         ports:
         - containerPort: 8881
         env:

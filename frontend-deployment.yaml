@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: myapp-frontend:latest # Локальный образ
+        image: green_api_myapp-frontend:latest # Локальный образ
         ports:
         - containerPort: 80
