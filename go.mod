@@ -6,4 +6,4 @@ require backend/greenapi v0.0.0
 
 require github.com/rs/cors v1.11.1
 
-replace backend/greenapi => /app/backend/greenapi/backend/greenapi
+replace backend/greenapi => /app/backend/greenapi
