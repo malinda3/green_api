@@ -18,4 +18,4 @@ COPY . ./
 WORKDIR /app/backend
 RUN ls greenapi/
 
-RUN go run greenapi/main.go
+RUN go run greenapi/backend/main.go
