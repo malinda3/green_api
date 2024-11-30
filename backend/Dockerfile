@@ -9,7 +9,8 @@ COPY . ./
 RUN go get github.com/rs/cors
 
 # Проверка структуры каталогов
-RUN ls -l /app/backend/greenapi
+RUN ls -l /app/backend/greenapi && ls -l frontend/
+
 
 # Запуск приложения
 CMD ["go", "run", "/app/backend/main.go"]
