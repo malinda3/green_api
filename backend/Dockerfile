@@ -15,8 +15,9 @@ RUN go mod tidy
 
 COPY . ./
 
-WORKDIR /app/backend/greenapi/greenapi/
-RUN ls /app/backend/greenapi/backend/greenapi/ && pwd
+WORKDIR /app/backend
+
+RUN ls -l /app/backend/greenapi
 
 RUN go get github.com/rs/cors
 
