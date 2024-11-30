@@ -10,7 +10,7 @@ services:
     networks:
       - main-network
     depends_on:
-      - backend
+      - myapp-backend
 
   myapp-backend:
     build:
