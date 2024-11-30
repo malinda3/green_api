@@ -7,7 +7,6 @@ COPY go.mod go.sum ./
 
 # Копируем go.mod и go.sum из backend/greenapi (если они есть)
 COPY backend/greenapi/go.mod ./backend/greenapi/
-COPY backend/greenapi/go.sum ./backend/greenapi/
 
 # Выполняем go mod tidy для основного проекта
 RUN go mod tidy
