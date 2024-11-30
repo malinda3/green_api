@@ -2,13 +2,14 @@ FROM golang:1.23-alpine as builder
 
 WORKDIR /app
 
-# Копируем go.mod и go.sum
 COPY go.mod go.sum ./
-
+COPY backend/greenapi/go.mod  ./backend/greenapi
 RUN go mod tidy
 
-# Копируем весь проект в контейнер
-COPY . .  # Убедитесь, что эта строка работает правильно
+WORKDIR /app/backend/greenapi
+RUN go mod tidy
+
+COPY . .  
 
 RUN go build -o /app/main /app/backend/main.go
 
