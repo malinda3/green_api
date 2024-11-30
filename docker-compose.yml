@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8881:8881"
+    environment:
+      - BASE_URL=http://localhost:8881 
+    networks:
+      - backend-network
+
+  frontend:
+    image: nginx:latest
+    ports:
+      - "80:80" 
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html:ro
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge

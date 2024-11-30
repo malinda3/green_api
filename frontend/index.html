@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green API</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="left-column">
+        <h3>Параметры</h3>
+        <label for="idInstance">idInstance:</label>
+        <input type="text" id="idInstance">
+
+        <label for="apiTokenInstance">ApiTokenInstance:</label>
+        <input type="text" id="apiTokenInstance">
+
+        <button onclick="getSettings()">GetSettings</button>
+        <button onclick="getStateInstance()">GetStateInstance</button>
+
+        <h3>Отправка сообщений</h3>
+        <label for="chatId">chatId:</label>
+        <input type="text" id="chatId">
+
+        <label for="message">Message:</label>
+        <input type="text" id="message">
+
+        <button onclick="sendMessage()">SendMessage</button>
+
+        <h3>Отправка файла</h3>
+        <label for="fileChatId">chatId:</label>
+        <input type="text" id="fileChatId">
+
+        <label for="urlFile">urlFile:</label>
+        <input type="text" id="urlFile">
+
+        <button onclick="sendFileByUrl()">SendFileByUrl</button>
+    </div>
+
+    <div class="right-column">
+        <div class="console-header">Ответ</div>
+        <div id="response" class="history">
+            <pre id="responseContent" class="console-output"></pre>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
