@@ -162,14 +162,14 @@
     // const defaultUrlFile = "https://sun9-37.userapi.com/impg/rWmGseJlnzKZjgbL9qNstDQyYpw7lo5S80Scgg/saRRNI0Crho.jpg?size=1170x1143&quality=95&sign=1b5e80e430c6338c90c9a4e06d2775b7&type=album"; 
     // const defaultCaption = "test with file";
 
-    function loadDefaultValues() {
-        document.getElementById('idInstance').value = defaultIdInstance;
-        document.getElementById('apiTokenInstance').value = defaultApiTokenInstance;
-        document.getElementById('chatId').value = defaultChatId;
-        document.getElementById('message').value = defaultMessage;
-        document.getElementById('urlFile').value = defaultUrlFile;
-        document.getElementById('caption').value = defaultCaption;
-    }
+    // function loadDefaultValues() {
+    //     document.getElementById('idInstance').value = defaultIdInstance;
+    //     document.getElementById('apiTokenInstance').value = defaultApiTokenInstance;
+    //     document.getElementById('chatId').value = defaultChatId;
+    //     document.getElementById('message').value = defaultMessage;
+    //     document.getElementById('urlFile').value = defaultUrlFile;
+    //     document.getElementById('caption').value = defaultCaption;
+    // }
 
     window.onload = loadDefaultValues;
 
@@ -177,7 +177,7 @@
     const baseUrl = 'http://109.172.114.84:8881'; 
 
 
-    function normalizePhoneNumber(phone) {
+    function processPhoneNumber(phone) {
     phone = phone.replace(/\D/g, '');
 
     if (phone.length === 11 && phone.startsWith('7')) {
@@ -244,7 +244,7 @@
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     try {
-        chatId = normalizePhoneNumber(chatId);
+        chatId = processPhoneNumber(chatId);
     } catch (error) {
         displayError('Ошибка при нормализации номера:', error.message);
         return;
@@ -272,9 +272,9 @@ function sendFileByUrl() {
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     try {
-        chatId = normalizePhoneNumber(chatId);
+        chatId = processPhoneNumber(chatId);
     } catch (error) {
-        displayError('Ошибка при нормализации номера:', error.message);
+        displayError('Error while processing Number:', error.message);
         return;
     }
 
