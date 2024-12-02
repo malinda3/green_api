@@ -26,14 +26,14 @@ type HandlerFunc func(w http.ResponseWriter, r *http.Request, api *greenapi.Gree
 func createHandler(action string) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, api *greenapi.GreenAPI) {
 		var requestData RequestData
-		fmt.Println("Получен запрос:", r.Method, r.URL)
+		fmt.Println("New request:", r.Method, r.URL)
 
 		if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		fmt.Println("Данные запроса:", requestData)
+		fmt.Println("Request data:", requestData)
 
 		apiInstance := greenapi.NewGreenAPI("https://1103.api.green-api.com", requestData.IdInstance, requestData.ApiTokenInstance)
 
@@ -42,16 +42,16 @@ func createHandler(action string) HandlerFunc {
 
 		switch action {
 		case "sendMessage":
-			fmt.Println("Отправляем запрос на API (SendMessage):", requestData.ChatId, requestData.Message)
+			fmt.Println("Sending message", requestData.ChatId, requestData.Message)
 			resultChan = apiInstance.SendMessageAsync(requestData.ChatId, requestData.Message)
 		case "sendFile":
-			fmt.Println("Отправляем запрос на API (SendFile):", requestData.ChatId, requestData.UrlFile, requestData.FileName)
+			fmt.Println("Sending file", requestData.ChatId, requestData.UrlFile, requestData.FileName)
 			resultChan = apiInstance.SendFileByUrlAsync(requestData.ChatId, requestData.UrlFile, requestData.FileName)
 		case "getSettings":
-			fmt.Println("Запрашиваем настройки экземпляра")
+			fmt.Println("Getting settings")
 			resultChan = apiInstance.GetSettingsAsync()
 		case "getStateInstance":
-			fmt.Println("Запрашиваем состояние экземпляра")
+			fmt.Println("Getting state")
 			resultChan = apiInstance.GetStateInstanceAsync()
 		default:
 			http.Error(w, "Unknown action", http.StatusBadRequest)
@@ -96,7 +96,6 @@ func main() {
 
 	fmt.Println("API сервер запущен на порту 8881")
 	log.Fatal(http.ListenAndServe(":8881", handler))
-	log.Fatal(http.ListenAndServe("0.0.0.0:8881", handler))
 	
 }
 
