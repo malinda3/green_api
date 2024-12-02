@@ -198,33 +198,36 @@
 
 
 
-function getSettings() {
-    const idInstance = document.getElementById('idInstance').value.trim();
-    const apiTokenInstance = document.getElementById('apiTokenInstance').value.trim();
-
-    if (!idInstance || !apiTokenInstance) {
+    function getSettings() {
+        const idInstance = document.getElementById('idInstance').value;
+        const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+        if (!idInstance || !apiTokenInstance) {
         displayError('Error:', 'Invalid token or idInstance. Please fill in all fields.');
         return;
     }
-
-    fetch(`${baseUrl}/getSettings`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ idInstance, apiTokenInstance })
-    })
-    .then(response => response.text())
-    .then(data => {
-        try {
-            const jsonData = JSON.parse(data);
-            displayResponse(jsonData);
-        } catch (error) {
-            displayError('Error while parsing json:', error);
-        }
-    })
-    .catch(error => displayError('Error:', error));
-}
+        console.log ("test:", idInstance, apiTokenInstance)
+        fetch(`${baseUrl}/getSettings`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ idInstance, apiTokenInstance })
+})
+.then(response => {
+    console.log(response);
+    return response.text();
+})
+.then(data => {
+    console.log(data); 
+    try {
+        const jsonData = JSON.parse(data);
+        displayResponse(jsonData);
+    } catch (error) {
+        displayError('Error while parsing json:', error);
+    }
+})
+.catch(error => displayError('Error:', error));
+    }
 
     function getStateInstance() {
         const idInstance = document.getElementById('idInstance').value;
