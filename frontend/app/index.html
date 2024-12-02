@@ -155,139 +155,136 @@
 </div>
 
 <script>
-    const defaultIdInstance = "1103157166";
-    const defaultApiTokenInstance = "cecd74e7d35849efa82c5a46f1fc543d618525b63cb84abda2";
-    const defaultChatId = "79687019003"; 
-    const defaultMessage = "test with message";
-    const defaultUrlFile = "https://sun9-37.userapi.com/impg/rWmGseJlnzKZjgbL9qNstDQyYpw7lo5S80Scgg/saRRNI0Crho.jpg?size=1170x1143&quality=95&sign=1b5e80e430c6338c90c9a4e06d2775b7&type=album"; 
 
-    function loadDefaultValues() {
-        document.getElementById('idInstance').value = defaultIdInstance;
-        document.getElementById('apiTokenInstance').value = defaultApiTokenInstance;
-        document.getElementById('chatId').value = defaultChatId;
-        document.getElementById('message').value = defaultMessage;
-        document.getElementById('urlFile').value = defaultUrlFile;
-    }
+const baseUrl = 'http://109.172.114.84:8881';
 
-    window.onload = loadDefaultValues;
+// Валидация номера телефона
+function validatePhoneNumber(phone) {
+    phone = phone.replace(/\D/g, ''); // Убираем все нецифровые символы
 
-    const baseUrl = 'http://109.172.114.84:8881'; 
-
-    function validatePhoneNumber(phone) {
-    phone = phone.replace(/\D/g, ''); 
-
-    if (phone.length === 11) {
+    if (phone.length >= 10 && phone.length <= 15) {
         return `${phone}@c.us`;
     }
 
-    throw new Error('Wrong number format. Try +7XXXXXXXXXX or 7XXXXXXXXXX.');
+    throw new Error('Неверный формат номера. Пожалуйста, введите номер в международном формате с + или без.');
+}
+
+// Получение настроек
+function getSettings() {
+    const idInstance = document.getElementById('idInstance').value;
+    const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+
+    if (!idInstance || !apiTokenInstance) {
+        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        return;
+    }
+
+    fetch(`${baseUrl}/getSettings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idInstance, apiTokenInstance })
+    })
+    .then(response => response.json())
+    .then(data => displayResponse(data))
+    .catch(error => displayError('Ошибка с API:', error, false));
+}
+
+// Получение состояния
+function getStateInstance() {
+    const idInstance = document.getElementById('idInstance').value;
+    const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+
+    if (!idInstance || !apiTokenInstance) {
+        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        return;
+    }
+
+    fetch(`${baseUrl}/getStateInstance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idInstance, apiTokenInstance })
+    })
+    .then(response => response.json())
+    .then(data => displayResponse(data))
+    .catch(error => displayError('Ошибка с API:', error, false));
+}
+
+// Отправка сообщения
+function sendMessage() {
+    let chatId = document.getElementById('chatId').value;
+    const message = document.getElementById('message').value;
+    const idInstance = document.getElementById('idInstance').value;
+    const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+
+    if (!idInstance || !apiTokenInstance) {
+        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        return;
+    }
+
+    try {
+        chatId = validatePhoneNumber(chatId);
+    } catch (error) {
+        displayError('Ошибка валидации номера:', error.message, true);
+        return;
+    }
+
+    fetch(`${baseUrl}/send-message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId, message, idInstance, apiTokenInstance })
+    })
+    .then(response => response.json())
+    .then(data => displayResponse(data))
+    .catch(error => displayError('Ошибка с API:', error, false));
+}
+
+// Отправка файла по URL
+function sendFileByUrl() {
+    let chatId = document.getElementById('fileChatId').value;
+    const urlFile = document.getElementById('urlFile').value;
+    const fileName = urlFile.split('/').pop().split('?')[0]; 
+    const idInstance = document.getElementById('idInstance').value;
+    const apiTokenInstance = document.getElementById('apiTokenInstance').value;
+
+    if (!idInstance || !apiTokenInstance) {
+        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        return;
+    }
+
+    try {
+        chatId = validatePhoneNumber(chatId);
+    } catch (error) {
+        displayError('Ошибка валидации номера:', error.message, true);
+        return;
+    }
+
+    fetch(`${baseUrl}/send-file`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId, urlFile, fileName, idInstance, apiTokenInstance })
+    })
+    .then(response => response.json())
+    .then(data => displayResponse(data))
+    .catch(error => displayError('Ошибка с API:', error, false));
+}
+
+// Отображение ответа
+function displayResponse(data) {
+    const responseContent = document.getElementById('responseContent');
+    responseContent.textContent = JSON.stringify(data, null, 2);
+}
+
+// Отображение ошибки
+function displayError(message, title, isClientError) {
+    const responseContent = document.getElementById('responseContent');
+    if (isClientError) {
+        alert(`${title}: ${message}`);
+    } else {
+        responseContent.textContent = `${title}: ${message}`;
+    }
 }
 
 
-    function getSettings() {
-        const idInstance = document.getElementById('idInstance').value;
-        const apiTokenInstance = document.getElementById('apiTokenInstance').value;
-
-        if (!idInstance || !apiTokenInstance) {
-            alert('Please, enter idInstance / apiTokenInstance.');
-            return;
-        }
-
-        fetch(`${baseUrl}/getSettings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idInstance, apiTokenInstance })
-        })
-        .then(response => response.json())
-        .then(data => displayResponse(data))
-        .catch(error => displayError('Ошибка:', error));
-    }
-
-    function getStateInstance() {
-        const idInstance = document.getElementById('idInstance').value;
-        const apiTokenInstance = document.getElementById('apiTokenInstance').value;
-
-        if (!idInstance || !apiTokenInstance) {
-            alert('Please, enter idInstance / apiTokenInstance.');
-            return;
-        }
-
-        fetch(`${baseUrl}/getStateInstance`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idInstance, apiTokenInstance })
-        })
-        .then(response => response.json())
-        .then(data => displayResponse(data))
-        .catch(error => displayError('Ошибка:', error));
-    }
-
-    function sendMessage() {
-        let chatId = document.getElementById('chatId').value;
-        const message = document.getElementById('message').value;
-        const idInstance = document.getElementById('idInstance').value;
-        const apiTokenInstance = document.getElementById('apiTokenInstance').value;
-
-        if (!idInstance || !apiTokenInstance) {
-            alert('Please, enter idInstance / apiTokenInstance.');
-            return;
-        }
-
-        try {
-            chatId = validatePhoneNumber(chatId);
-        } catch (error) {
-            displayError('Error validating number:', error.message);
-            return;
-        }
-
-        fetch(`${baseUrl}/send-message`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId, message, idInstance, apiTokenInstance })
-        })
-        .then(response => response.json())
-        .then(data => displayResponse(data))
-        .catch(error => displayError('Ошибка:', error));
-    }
-
-    function sendFileByUrl() {
-        let chatId = document.getElementById('fileChatId').value;
-        const urlFile = document.getElementById('urlFile').value;
-        const fileName = urlFile.split('/').pop().split('?')[0]; 
-        const idInstance = document.getElementById('idInstance').value;
-        const apiTokenInstance = document.getElementById('apiTokenInstance').value;
-
-        if (!idInstance || !apiTokenInstance) {
-            alert('Please, enter idInstance / apiTokenInstance.');
-            return;
-        }
-
-        try {
-            chatId = validatePhoneNumber(chatId);
-        } catch (error) {
-            displayError('Error validating number:', error.message);
-            return;
-        }
-
-        fetch(`${baseUrl}/send-file`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chatId, urlFile, fileName, idInstance, apiTokenInstance })
-        })
-        .then(response => response.json())
-        .then(data => displayResponse(data))
-        .catch(error => displayError('Error:', error));
-    }
-
-    function displayResponse(data) {
-        const responseElement = document.getElementById('responseContent');
-        responseElement.textContent = JSON.stringify(data, null, 2);
-    }
-
-    function displayError(message, error) {
-        const responseElement = document.getElementById('responseContent');
-        responseElement.textContent = `${message} ${error}`;
-    }
 </script>
 
 </body>
