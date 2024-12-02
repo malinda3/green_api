@@ -178,23 +178,18 @@
 
 
     function processPhoneNumber(phone) {
-    const sanitizedPhone = phone.replace(/\D/g, '');
+    phone = phone.replace(/\D/g, '');
 
-    if (!sanitizedPhone) {
-        throw new Error('Phone number is empty or invalid. Please provide a number in the format "7XXXXXXXXXX".');
+    if (phone.length === 11 && phone.startsWith('7')) {
+        return phone + '@c.us';
     }
 
-    if (sanitizedPhone.length === 11 && sanitizedPhone.startsWith('7')) {
-        return `${sanitizedPhone}@c.us`;
+    if (phone.length === 12 && phone.startsWith('7')) {
+        return phone.substring(1) + '@c.us';
     }
 
-    if (sanitizedPhone.length === 10) {
-        return `7${sanitizedPhone}@c.us`;
-    }
-
-    throw new Error('Invalid phone number format. Please provide a number in the format "7XXXXXXXXXX".');
+    throw new Error('Error with number');
 }
-
 
 
 
