@@ -155,29 +155,29 @@
 </div>
 
 <script>
-    //  const defaultIdInstance = "1103157166";
-    // const defaultApiTokenInstance = "cecd74e7d35849efa82c5a46f1fc543d618525b63cb84abda2";
-    // const defaultChatId = "79687019003"; 
-    // const defaultMessage = "test with message";
-    // const defaultUrlFile = "https://sun9-37.userapi.com/impg/rWmGseJlnzKZjgbL9qNstDQyYpw7lo5S80Scgg/saRRNI0Crho.jpg?size=1170x1143&quality=95&sign=1b5e80e430c6338c90c9a4e06d2775b7&type=album"; 
-    // const defaultCaption = "test with file";
+     const defaultIdInstance = "1103157166";
+    const defaultApiTokenInstance = "cecd74e7d35849efa82c5a46f1fc543d618525b63cb84abda2";
+    const defaultChatId = "79687019003"; 
+    const defaultMessage = "test with message";
+    const defaultUrlFile = "https://sun9-37.userapi.com/impg/rWmGseJlnzKZjgbL9qNstDQyYpw7lo5S80Scgg/saRRNI0Crho.jpg?size=1170x1143&quality=95&sign=1b5e80e430c6338c90c9a4e06d2775b7&type=album"; 
+    const defaultCaption = "test with file"; 
 
-    // function loadDefaultValues() {
-    //     document.getElementById('idInstance').value = defaultIdInstance;
-    //     document.getElementById('apiTokenInstance').value = defaultApiTokenInstance;
-    //     document.getElementById('chatId').value = defaultChatId;
-    //     document.getElementById('message').value = defaultMessage;
-    //     document.getElementById('urlFile').value = defaultUrlFile;
-    //     document.getElementById('caption').value = defaultCaption;
-    // }
+    function loadDefaultValues() {
+        document.getElementById('idInstance').value = defaultIdInstance;
+        document.getElementById('apiTokenInstance').value = defaultApiTokenInstance;
+        document.getElementById('chatId').value = defaultChatId;
+        document.getElementById('message').value = defaultMessage;
+        document.getElementById('urlFile').value = defaultUrlFile;
+        document.getElementById('caption').value = defaultCaption;
+    }
 
     window.onload = loadDefaultValues;
 
 
-    const baseUrl = 'http://109.172.114.84:8881'; 
+    const baseUrl = 'http://109.172.114.84'; 
 
 
-    function processPhoneNumber(phone) {
+    function normalizePhoneNumber(phone) {
     phone = phone.replace(/\D/g, '');
 
     if (phone.length === 11 && phone.startsWith('7')) {
@@ -188,7 +188,7 @@
         return phone.substring(1) + '@c.us';
     }
 
-    throw new Error('Error with number');
+    throw new Error('Неверный формат номера телефона');
 }
 
 
@@ -214,10 +214,10 @@
         const jsonData = JSON.parse(data);
         displayResponse(jsonData);
     } catch (error) {
-        displayError('Error while parsing json:', error);
+        displayError('Ошибка при парсинге JSON:', error);
     }
 })
-.catch(error => displayError('Error:', error));
+.catch(error => displayError('Ошибка:', error));
     }
 
     function getStateInstance() {
@@ -234,7 +234,7 @@
             .then(data => {
                 displayResponse(data);
             })
-            .catch(error => displayError('Error:', error));
+            .catch(error => displayError('Ошибка:', error));
     }
 
     function sendMessage() {
@@ -244,9 +244,9 @@
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     try {
-        chatId = processPhoneNumber(chatId);
+        chatId = normalizePhoneNumber(chatId);
     } catch (error) {
-        displayError('Error while processing Number:', error.message);
+        displayError('Ошибка при нормализации номера:', error.message);
         return;
     }
 
@@ -261,7 +261,7 @@
     .then(data => {
         displayResponse(data);
     })
-    .catch(error => displayError('Error:', error));
+    .catch(error => displayError('Ошибка:', error));
 }
 
 function sendFileByUrl() {
@@ -272,9 +272,9 @@ function sendFileByUrl() {
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     try {
-        chatId = processPhoneNumber(chatId);
+        chatId = normalizePhoneNumber(chatId);
     } catch (error) {
-        displayError('Error while processing Number:', error.message);
+        displayError('Ошибка при нормализации номера:', error.message);
         return;
     }
 
@@ -289,7 +289,7 @@ function sendFileByUrl() {
     .then(data => {
         displayResponse(data);
     })
-    .catch(error => displayError('Error:', error));
+    .catch(error => displayError('Ошибка:', error));
 }
 
 
