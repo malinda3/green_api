@@ -155,10 +155,8 @@
 </div>
 
 <script>
-
 const baseUrl = 'http://109.172.114.84:8881';
 
-// Валидация номера телефона
 function validatePhoneNumber(phone) {
     phone = phone.replace(/\D/g, ''); // Убираем все нецифровые символы
 
@@ -169,7 +167,6 @@ function validatePhoneNumber(phone) {
     throw new Error('Неверный формат номера. Пожалуйста, введите номер в международном формате с + или без.');
 }
 
-// Получение настроек
 function getSettings() {
     const idInstance = document.getElementById('idInstance').value;
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
@@ -189,7 +186,6 @@ function getSettings() {
     .catch(error => displayError('Ошибка с API:', error, false));
 }
 
-// Получение состояния
 function getStateInstance() {
     const idInstance = document.getElementById('idInstance').value;
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
@@ -209,7 +205,6 @@ function getStateInstance() {
     .catch(error => displayError('Ошибка с API:', error, false));
 }
 
-// Отправка сообщения
 function sendMessage() {
     let chatId = document.getElementById('chatId').value;
     const message = document.getElementById('message').value;
@@ -218,6 +213,11 @@ function sendMessage() {
 
     if (!idInstance || !apiTokenInstance) {
         displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        return;
+    }
+
+    if (!message.trim()) {
+        displayError('Пожалуйста, введите сообщение.', 'Сообщение пустое', true);
         return;
     }
 
@@ -238,7 +238,6 @@ function sendMessage() {
     .catch(error => displayError('Ошибка с API:', error, false));
 }
 
-// Отправка файла по URL
 function sendFileByUrl() {
     let chatId = document.getElementById('fileChatId').value;
     const urlFile = document.getElementById('urlFile').value;
@@ -248,6 +247,11 @@ function sendFileByUrl() {
 
     if (!idInstance || !apiTokenInstance) {
         displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        return;
+    }
+
+    if (!urlFile.trim()) {
+        displayError('Пожалуйста, введите URL файла.', 'URL файла пустой', true);
         return;
     }
 
@@ -268,13 +272,11 @@ function sendFileByUrl() {
     .catch(error => displayError('Ошибка с API:', error, false));
 }
 
-// Отображение ответа
 function displayResponse(data) {
     const responseContent = document.getElementById('responseContent');
     responseContent.textContent = JSON.stringify(data, null, 2);
 }
 
-// Отображение ошибки
 function displayError(message, title, isClientError) {
     const responseContent = document.getElementById('responseContent');
     if (isClientError) {
@@ -283,7 +285,6 @@ function displayError(message, title, isClientError) {
         responseContent.textContent = `${title}: ${message}`;
     }
 }
-
 
 </script>
 
