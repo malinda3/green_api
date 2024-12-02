@@ -26,7 +26,6 @@ func createHandler(action string) http.HandlerFunc {
 		var requestData RequestData
 		log.Printf("Получен запрос: %s %s", r.Method, r.URL.Path)
 
-		// Логируем тело запроса
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			log.Printf("Ошибка при чтении тела запроса: %v", err)
@@ -34,10 +33,8 @@ func createHandler(action string) http.HandlerFunc {
 			return
 		}
 
-		// Логируем полученное тело
 		log.Printf("Тело запроса: %s", string(body))
 
-		// Возвращаем тело обратно в request.Body для дальнейшей обработки
 		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
@@ -77,35 +74,26 @@ func createHandler(action string) http.HandlerFunc {
 }
 
 func main() {
-	// Настройка CORS для API
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type"},
 	})
 
-	// API-обработчики
 	apiMux := http.NewServeMux()
 	apiMux.HandleFunc("/send-message", createHandler("sendMessage"))
 	apiMux.HandleFunc("/send-file", createHandler("sendFile"))
 	apiMux.HandleFunc("/getSettings", createHandler("getSettings"))
 	apiMux.HandleFunc("/getStateInstance", createHandler("getStateInstance"))
 
-	// Сервер для статики
-	staticMux := http.NewServeMux()
-	staticMux.Handle("/", http.FileServer(http.Dir("static")))
-
-	// Ожидание работы серверов
 	var wg sync.WaitGroup
-	wg.Add(1) // два сервера
+	wg.Add(1)
 
-	// API-сервер
 	go func() {
 		defer wg.Done()
 		handler := c.Handler(apiMux)
 		apiPort := "8881"
 		log.Printf("API запущено на порту %s", apiPort)
-		log.Printf("Адрес API: http://localhost:%s", apiPort)
 		if err := http.ListenAndServe(":"+apiPort, handler); err != nil {
 			log.Fatalf("Ошибка при запуске API-сервера: %v", err)
 		}

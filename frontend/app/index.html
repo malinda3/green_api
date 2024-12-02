@@ -176,11 +176,11 @@
     function validatePhoneNumber(phone) {
     phone = phone.replace(/\D/g, ''); 
 
-    if (phone.length === 11 && phone.startsWith('7')) {
+    if (phone.length === 11) {
         return `${phone}@c.us`;
     }
 
-    throw new Error('Неверный формат номера. Пожалуйста, введите номер в формате +7XXXXXXXXXX.');
+    throw new Error('Wrong number format. Try +7XXXXXXXXXX or 7XXXXXXXXXX.');
 }
 
 
@@ -188,9 +188,8 @@
         const idInstance = document.getElementById('idInstance').value;
         const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
-        // Проверка на обязательные поля
         if (!idInstance || !apiTokenInstance) {
-            alert('Пожалуйста, введите idInstance и apiTokenInstance.');
+            alert('Please, enter idInstance / apiTokenInstance.');
             return;
         }
 
@@ -209,7 +208,7 @@
         const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
         if (!idInstance || !apiTokenInstance) {
-            alert('Пожалуйста, введите idInstance и apiTokenInstance.');
+            alert('Please, enter idInstance / apiTokenInstance.');
             return;
         }
 
@@ -229,16 +228,15 @@
         const idInstance = document.getElementById('idInstance').value;
         const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
-        // Проверка на обязательные поля
         if (!idInstance || !apiTokenInstance) {
-            alert('Пожалуйста, введите idInstance и apiTokenInstance.');
+            alert('Please, enter idInstance / apiTokenInstance.');
             return;
         }
 
         try {
-            chatId = validatePhoneNumber(chatId); // Валидация телефона
+            chatId = validatePhoneNumber(chatId);
         } catch (error) {
-            displayError('Ошибка при нормализации номера:', error.message);
+            displayError('Error validating number:', error.message);
             return;
         }
 
@@ -259,16 +257,15 @@
         const idInstance = document.getElementById('idInstance').value;
         const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
-        // Проверка на обязательные поля
         if (!idInstance || !apiTokenInstance) {
-            alert('Пожалуйста, введите idInstance и apiTokenInstance.');
+            alert('Please, enter idInstance / apiTokenInstance.');
             return;
         }
 
         try {
-            chatId = validatePhoneNumber(chatId); // Валидация телефона
+            chatId = validatePhoneNumber(chatId);
         } catch (error) {
-            displayError('Ошибка при нормализации номера:', error.message);
+            displayError('Error validating number:', error.message);
             return;
         }
 
@@ -279,7 +276,7 @@
         })
         .then(response => response.json())
         .then(data => displayResponse(data))
-        .catch(error => displayError('Ошибка:', error));
+        .catch(error => displayError('Error:', error));
     }
 
     function displayResponse(data) {
