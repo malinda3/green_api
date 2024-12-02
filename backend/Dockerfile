@@ -1,11 +1,31 @@
+# Стадия сборки
 FROM golang:1.23-alpine as builder
+
+RUN apk add --no-cache git
 
 WORKDIR /app
 
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY . ./
 
-RUN go install github.com/rs/cors
+# Сборка бинарного файла
+RUN go build -o /app/server /app/main.go
 
-RUN ls -l /app/backend/greenapi && ls -l frontend/
+# Стадия запуска
+FROM alpine:latest
 
-CMD ["go", "run", "/app/backend/main.go"]
+WORKDIR /app
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /app/server /app/server
+
+# Установить права на выполнение
+RUN chmod +x /app/server
+
+# Указать открытые порты
+EXPOSE 8881
+
+CMD ["/app/server"]
