@@ -201,10 +201,6 @@
     function getSettings() {
         const idInstance = document.getElementById('idInstance').value;
         const apiTokenInstance = document.getElementById('apiTokenInstance').value;
-        if (!idInstance || !apiTokenInstance) {
-        displayError('Error:', 'Invalid token or idInstance. Please fill in all fields.');
-        return;
-    }
         console.log ("test:", idInstance, apiTokenInstance)
         fetch(`${baseUrl}/getSettings`, {
     method: 'POST',
