@@ -158,13 +158,13 @@
 const baseUrl = 'http://109.172.114.84:8881';
 
 function validatePhoneNumber(phone) {
-    phone = phone.replace(/\D/g, ''); // Убираем все нецифровые символы
+    phone = phone.replace(/\D/g, '');
 
     if (phone.length >= 10 && phone.length <= 15) {
         return `${phone}@c.us`;
     }
 
-    throw new Error('Неверный формат номера. Пожалуйста, введите номер в международном формате с + или без.');
+    throw new Error('Error processing Number(chatId). Please, Use format "prefixXXXXXXXXXX" OR "+XXXXXXXXXXX"');
 }
 
 function getSettings() {
@@ -172,7 +172,7 @@ function getSettings() {
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     if (!idInstance || !apiTokenInstance) {
-        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        displayError('Please, enter idInstance / apiTokenInstance. ', 'Недостающие данные', true);
         return;
     }
 
@@ -191,7 +191,7 @@ function getStateInstance() {
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     if (!idInstance || !apiTokenInstance) {
-        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        displayError('Please, enter idInstance / apiTokenInstance. ', 'Недостающие данные', true);
         return;
     }
 
@@ -212,19 +212,19 @@ function sendMessage() {
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     if (!idInstance || !apiTokenInstance) {
-        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        displayError('Please, enter idInstance / apiTokenInstance.', 'Недостающие данные', true);
         return;
     }
 
     if (!message.trim()) {
-        displayError('Пожалуйста, введите сообщение.', 'Сообщение пустое', true);
+        displayError('Please enter message', 'Сообщение пустое', true);
         return;
     }
 
     try {
         chatId = validatePhoneNumber(chatId);
     } catch (error) {
-        displayError('Ошибка валидации номера:', error.message, true);
+        displayError('Error number validating:', error.message, true);
         return;
     }
 
@@ -235,7 +235,7 @@ function sendMessage() {
     })
     .then(response => response.json())
     .then(data => displayResponse(data))
-    .catch(error => displayError('Ошибка с API:', error, false));
+    .catch(error => displayError('SERVER ERROR:', error, false));
 }
 
 function sendFileByUrl() {
@@ -246,12 +246,12 @@ function sendFileByUrl() {
     const apiTokenInstance = document.getElementById('apiTokenInstance').value;
 
     if (!idInstance || !apiTokenInstance) {
-        displayError('Пожалуйста, введите idInstance / apiTokenInstance.', 'Недостающие данные', true);
+        displayError('Please, enter idInstance / apiTokenInstance. ', 'Недостающие данные', true);
         return;
     }
 
     if (!urlFile.trim()) {
-        displayError('Пожалуйста, введите URL файла.', 'URL файла пустой', true);
+        displayError('Pleasem enter file url.', 'URL файла пустой', true);
         return;
     }
 
