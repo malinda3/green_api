@@ -1,11 +1,30 @@
-FROM golang:1.23-alpine as builder
+# Этап сборки
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-COPY . ./
+# Копируем файлы go.mod и go.sum для установки зависимостей
+COPY backend/go.mod backend/go.sum ./
 
-RUN go get github.com/rs/cors
+# Устанавливаем зависимости
+RUN go mod download
 
-RUN ls -l /app/backend/greenapi && ls -l frontend/
+# Копируем код приложения
+COPY backend/ .
 
-CMD ["go", "run", "/app/backend/main.go"]
+# Сборка бинарного файла
+RUN go build -o main .
+
+# Минимальный финальный образ
+FROM alpine:latest
+
+WORKDIR /app
+
+# Копируем скомпилированный файл
+COPY --from=builder /app/main .
+
+# Добавляем зависимости (например, сертификаты для HTTPS)
+RUN apk --no-cache add ca-certificates
+
+# Указываем команду для запуска
+CMD ["./main"]

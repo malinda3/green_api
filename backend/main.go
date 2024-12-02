@@ -1,7 +1,7 @@
 package main
 
 import (
-	"backend/greenapi"
+	"greenapi/greenapi"
 	"encoding/json"
 	"fmt"
 	"log"
