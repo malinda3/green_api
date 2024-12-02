@@ -1,12 +1,14 @@
 package main
 
 import (
-	"greenapi/greenapi"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"sync"
+	"greenapi/greenapi"
 	"github.com/rs/cors"
+	"bytes"
+	"io"
 )
 
 type RequestData struct {
@@ -19,39 +21,44 @@ type RequestData struct {
 	ApiTokenInstance string `json:"apiTokenInstance"`
 }
 
-var api *greenapi.GreenAPI
-
-type HandlerFunc func(w http.ResponseWriter, r *http.Request, api *greenapi.GreenAPI)
-
-func createHandler(action string) HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, api *greenapi.GreenAPI) {
+func createHandler(action string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var requestData RequestData
-		fmt.Println("New request:", r.Method, r.URL)
+		log.Printf("Получен запрос: %s %s", r.Method, r.URL.Path)
 
-		if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		// Логируем тело запроса
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Ошибка при чтении тела запроса: %v", err)
+			http.Error(w, "Ошибка при чтении тела запроса", http.StatusInternalServerError)
 			return
 		}
 
-		fmt.Println("Request data:", requestData)
+		// Логируем полученное тело
+		log.Printf("Тело запроса: %s", string(body))
+
+		// Возвращаем тело обратно в request.Body для дальнейшей обработки
+		r.Body = io.NopCloser(bytes.NewReader(body))
+
+		if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+			log.Printf("Ошибка при парсинге JSON: %v", err)
+			http.Error(w, "Ошибка при парсинге JSON", http.StatusBadRequest)
+			return
+		}
+
+		log.Printf("Данные запроса: %+v", requestData)
 
 		apiInstance := greenapi.NewGreenAPI("https://1103.api.green-api.com", requestData.IdInstance, requestData.ApiTokenInstance)
 
 		var resultChan <-chan greenapi.AsyncResult
-
-
 		switch action {
 		case "sendMessage":
-			fmt.Println("Sending message", requestData.ChatId, requestData.Message)
 			resultChan = apiInstance.SendMessageAsync(requestData.ChatId, requestData.Message)
 		case "sendFile":
-			fmt.Println("Sending file", requestData.ChatId, requestData.UrlFile, requestData.FileName)
 			resultChan = apiInstance.SendFileByUrlAsync(requestData.ChatId, requestData.UrlFile, requestData.FileName)
 		case "getSettings":
-			fmt.Println("Getting settings")
 			resultChan = apiInstance.GetSettingsAsync()
 		case "getStateInstance":
-			fmt.Println("Getting state")
 			resultChan = apiInstance.GetStateInstanceAsync()
 		default:
 			http.Error(w, "Unknown action", http.StatusBadRequest)
@@ -59,13 +66,10 @@ func createHandler(action string) HandlerFunc {
 		}
 
 		result := <-resultChan
-
 		if result.Error != nil {
 			http.Error(w, result.Error.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		fmt.Println("Ответ от API:", result.Response)
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result.Response)
@@ -73,35 +77,44 @@ func createHandler(action string) HandlerFunc {
 }
 
 func main() {
+	// Настройка CORS для API
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type"},
 	})
 
-	http.HandleFunc("/send-message", func(w http.ResponseWriter, r *http.Request) {
-		createHandler("sendMessage")(w, r, api)
-	})
-	http.HandleFunc("/send-file", func(w http.ResponseWriter, r *http.Request) {
-		createHandler("sendFile")(w, r, api)
-	})
-	http.HandleFunc("/getSettings", func(w http.ResponseWriter, r *http.Request) {
-		createHandler("getSettings")(w, r, api)
-	})
-	http.HandleFunc("/getStateInstance", func(w http.ResponseWriter, r *http.Request) {
-		createHandler("getStateInstance")(w, r, api)
-	})
+	// API-обработчики
+	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("/send-message", createHandler("sendMessage"))
+	apiMux.HandleFunc("/send-file", createHandler("sendFile"))
+	apiMux.HandleFunc("/getSettings", createHandler("getSettings"))
+	apiMux.HandleFunc("/getStateInstance", createHandler("getStateInstance"))
 
-	handler := c.Handler(http.DefaultServeMux)
+	// Сервер для статики
+	staticMux := http.NewServeMux()
+	staticMux.Handle("/", http.FileServer(http.Dir("static")))
 
-	fmt.Println("API сервер запущен на порту 8881")
-	log.Fatal(http.ListenAndServe(":8881", handler))
-	
+	// Ожидание работы серверов
+	var wg sync.WaitGroup
+	wg.Add(1) // два сервера
+
+	// API-сервер
+	go func() {
+		defer wg.Done()
+		handler := c.Handler(apiMux)
+		apiPort := "8881"
+		log.Printf("API запущено на порту %s", apiPort)
+		log.Printf("Адрес API: http://localhost:%s", apiPort)
+		if err := http.ListenAndServe(":"+apiPort, handler); err != nil {
+			log.Fatalf("Ошибка при запуске API-сервера: %v", err)
+		}
+	}()
+
+	wg.Wait()
 }
 
 
-
-// func main() {
 // 	//данные из личного кабинета, нужны для всех методовЫ
 // 	baseURL := "https://1103.api.green-api.com"
 // 	idInstance := "1103157166"
@@ -115,42 +128,40 @@ func main() {
 // 	fileName := "saRRNI0Crho.jpg"
 // 	caption := "Here's the file!"
 // 	///////////////////4 метод тест Отправка файлов
-// 	file, err := api.SendFileByUrl(chatId, urlFile, fileName, caption)
-// 	if err != nil {
-// 		log.Fatalf("Ошибка при отправке файла: %v", err)
-// 	}
 
-// 	fmt.Println("\nОтвет от отправки файла:")
-// 	for key, value := range file {
-// 		fmt.Printf("%s: %v\n", key, value)
-// 	}
-// 	///////////////////2 метод тест Отправка сообщений
-// 	response, err := api.SendMessage(chatId, message)
-// 	if err != nil {
-// 		log.Fatalf("Ошибка при отправке сообщения: %v", err)
-// 	}
-
-// 	fmt.Println("\nОтвет от отправки сообщения:")
-// 	for key, value := range response {
-// 		fmt.Printf("%s: %v\n", key, value)
-// 	}
-// 	///////////////////2 метод тест Получения статуса Инстанса
-// 	state, err := api.GetStateInstance()
-// 	if err != nil {
-// 		log.Fatalf("Ошибка при вызове GetStateInstance: %v", err)
-// 	}
-// 	fmt.Println("\nСостояние инстанса:")
-// 	for key, value := range state {
-// 		fmt.Printf("%s: %v\n", key, value)
-// 	}
-// 	/////////////////1 метод тест Получение настроек инстанса
-// 	settings, err := api.GetSettings()
-// 	if err != nil {
-// 		log.Fatalf("Ошибка при вызове GetSettings: %v", err)
-// 	}
-
-// 	fmt.Println("Настройки инстанса:")
-// 	for key, value := range settings {
-// 		fmt.Printf("%s: %v\n", key, value)
-// 	}
-// }
+////////////////////////////////////запросы для будушего теста апи
+// 1. Запрос getSettings:
+// bash
+// Copy code
+// curl -X POST http://localhost:8881/getSettings \
+//   -H "Content-Type: application/json" \
+//   -d '{"idInstance": "1103157166", "apiTokenInstance": "cecd74e7d35849efa82c5a46f1fc543d618525b63cb84abda2"}'
+// 2. Запрос getStateInstance:
+// bash
+// Copy code
+// curl -X POST http://localhost:8881/getStateInstance \
+//   -H "Content-Type: application/json" \
+//   -d '{"idInstance": "1103157166", "apiTokenInstance": "cecd74e7d35849efa82c5a46f1fc543d618525b63cb84abda2"}'
+// 3. Запрос на отправку сообщения (sendMessage):
+// bash
+// Copy code
+// curl -X POST http://localhost:8881/send-message \
+//   -H "Content-Type: application/json" \
+//   -d '{
+//     "chatId": "79687019003",
+//     "message": "test with message",
+//     "idInstance": "1103157166",
+//     "apiTokenInstance": "cecd74e7d35849efa82c5a46f1fc543d618525b63cb84abda2"
+//   }'
+// 4. Запрос на отправку файла (sendFileByUrl):
+// bash
+// Copy code
+// curl -X POST http://localhost:8881/send-file \
+//   -H "Content-Type: application/json" \
+//   -d '{
+//     "chatId": "79687019003",
+//     "urlFile": "https://sun9-37.userapi.com/impg/rWmGseJlnzKZjgbL9qNstDQyYpw7lo5S80Scgg/saRRNI0Crho.jpg?size=1170x1143&quality=95&sign=1b5e80e430c6338c90c9a4e06d2775b7&type=album",
+//     "fileName": "saRRNI0Crho.jpg",
+//     "idInstance": "1103157166",
+//     "apiTokenInstance": "cecd74e7d35849efa82c5a46f1fc543d618525b63cb84abda2"
+//   }'
